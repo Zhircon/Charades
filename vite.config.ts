@@ -6,9 +6,5 @@ import mkcert from 'vite-plugin-mkcert';
 export default defineConfig({
   plugins: [react(),
     mkcert()
-  ],
-  server: {
-    // Esto fuerza a Vite a iniciar el servidor en modo HTTPS
-    https: true 
-  }
+  ]
 })
