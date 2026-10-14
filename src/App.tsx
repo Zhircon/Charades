@@ -107,6 +107,8 @@ export default function App() {
           />
         )}
         {screen === "game" && <Gameplay settings={settings} onExit={() => setScreen("settings")} />}
+        {screen === "home" && <p>Made by @Zhircon with ❤ for Xalapa language exchange</p>}
+        
       </div>
     </div>
   );
