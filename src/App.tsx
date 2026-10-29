@@ -4,6 +4,7 @@ import Settings from "./settings";
 import Gameplay from "./gameplay";
 import FullscreenButton, { useFullscreen } from "./fullscreen";
 import type { GameSettings } from "./concepts";
+import { ALL_CATEGORIES } from "./remix";
 
 type Screen = "home" | "settings" | "game";
 type CSSVars = CSSProperties & Record<`--${string}`, string | number>;
@@ -66,7 +67,13 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
 
   // Opciones elegidas en Settings; Gameplay las recibe al empezar.
-  const [settings, setSettings] = useState<GameSettings>({ category: "remix", endless: true, minutes: 2, tilt: true });
+  const [settings, setSettings] = useState<GameSettings>({
+    category: "remix",
+    endless: true,
+    minutes: 2,
+    tilt: true,
+    remixCategories: ALL_CATEGORIES,
+  });
 
   // Pantalla completa real; mientras está activa la pantalla del celular no se apaga.
   const { active: fullscreen, toggle: toggleFullscreen } = useFullscreen();
@@ -107,8 +114,6 @@ export default function App() {
           />
         )}
         {screen === "game" && <Gameplay settings={settings} onExit={() => setScreen("settings")} />}
-        {screen === "home" && <p>Made by @Zhircon with ❤ for Xalapa language exchange</p>}
-        
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 /* Fredoka: si la app corre sin internet (Capacitor/Cordova), instala @fontsource-variable/fredoka
    y reemplaza este @import por: import "@fontsource-variable/fredoka"; en App.tsx */
 @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap");
+/* Tema Halloween: fuente del título (opcional, si no carga se usa Fredoka) */
+@import url("https://fonts.googleapis.com/css2?family=Creepster&display=swap");
 
 :root {
   --ink: #1d1245;
@@ -699,6 +701,50 @@ button {
   overflow-wrap: anywhere;
 }
 
+/* Interruptores de categorías incluidas en Remix */
+.remix-card {
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.08);
+  animation: swap 0.45s var(--spring) both;
+}
+.remix-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+}
+.remix-title { font-size: 1.1rem; font-weight: 600; }
+.remix-count {
+  font-size: 1rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.remix-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.1rem 2rem;
+}
+.remix-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  min-height: var(--tap);
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+.remix-name { display: flex; align-items: center; gap: 0.6rem; }
+.remix-hint { margin-top: 0.4rem; font-size: 0.95rem; color: var(--muted); }
+.switch:disabled { opacity: 0.55; cursor: not-allowed; }
+
+@media (min-width: 720px) {
+  .remix-list { grid-template-columns: 1fr 1fr; }
+}
+
 /* ───────────── Keyframes ───────────── */
 
 @keyframes reveal {
@@ -781,3 +827,64 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ═══════════════════════ TEMA HALLOWEEN ═══════════════════════
+   Todo el tema vive en este bloque (más el @import de Creepster arriba).
+   Para volver al estilo anterior, borra ambos. No hay cambios en los .tsx. */
+
+:root {
+  --ink: #170b24;        /* fondo: morado casi negro */
+  --cyan: #ff7a1a;       /* color principal: naranja calabaza */
+  --cyan-deep: #b84a05;
+  --sun: #ffd23f;
+  --pink: #ff4d6d;       /* rojo sangre */
+  --mint: #8dff5a;       /* verde slime */
+  --orange: #ffab2e;
+  --lilac: #b388ff;
+  --paper: #fff1dc;      /* pergamino */
+  --muted: #cbb5e8;
+  --slate: #6e4b7f;
+}
+
+.app {
+  background:
+    radial-gradient(90% 55% at 50% 108%, rgba(255, 122, 26, 0.32), transparent 62%),
+    radial-gradient(110% 80% at 12% 0%, #3b1763 0%, transparent 60%),
+    var(--ink);
+}
+
+.countdown { background: rgba(23, 11, 36, 0.92); }
+.results   { background: rgba(23, 11, 36, 0.95); }
+
+/* Títulos con fuente de Halloween */
+.logo,
+.logo-small,
+.count-num,
+.results-title {
+  font-family: "Creepster", "Fredoka", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+.logo-letter {
+  text-shadow: 0 0 0.35em rgba(255, 122, 26, 0.55), 0 0.05em 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Las figuras flotantes se vuelven calabazas, murciélagos, telarañas y fantasmas */
+.shape {
+  opacity: 0.55;
+  font-size: var(--s);
+  line-height: 1;
+}
+.shape-circle,
+.shape-tri,
+.shape-ring,
+.shape-sq {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  clip-path: none;
+}
+.shape-circle::after { content: "🎃"; }
+.shape-tri::after    { content: "🦇"; }
+.shape-ring::after   { content: "🕸️"; }
+.shape-sq::after     { content: "👻"; }

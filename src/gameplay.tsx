@@ -22,7 +22,8 @@ const makeDeck = (pool: Concept[], avoidFirst?: Concept) => shuffle(pool, avoidF
 const actionLabel = (a: "gotIt" | "skip") => (a === "gotIt" ? "Got it!" : "Skip");
 
 export default function Gameplay({ settings, onExit }: Props) {
-  const { category, endless, minutes, tilt } = settings;
+  const { category, endless, minutes, tilt, remixCategories } = settings;
+  const remixKey = remixCategories.join(","); // para recargar si cambian las categorías de Remix
   const roundSeconds = minutes * 60;
 
   const [pool, setPool] = useState<Concept[]>([]); // todos los conceptos de la categoría
@@ -47,7 +48,7 @@ export default function Gameplay({ settings, onExit }: Props) {
   // Carga de conceptos desde SQLite
   useEffect(() => {
     let cancelled = false;
-    loadConcepts(category)
+    loadConcepts(category, remixCategories)
       .then((list) => {
         if (cancelled) return;
         if (list.length === 0) {
@@ -64,7 +65,7 @@ export default function Gameplay({ settings, onExit }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [category]);
+  }, [category, remixKey]);
 
   // Cuenta regresiva 3-2-1 (empieza cuando ya cargaron los conceptos)
   useEffect(() => {

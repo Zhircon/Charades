@@ -1,5 +1,6 @@
 import initSqlJs, { type Database } from "sql.js";
 import wasmUrl from "sql.js/dist/sql-wasm.wasm?url";
+import { ALL_CATEGORIES } from "./remix";
 
 export type CategoryId =
   | "actions"
@@ -18,6 +19,7 @@ export type GameSettings = {
   endless: boolean;
   minutes: number;
   tilt: boolean; // controlar con la inclinación del celular
+  remixCategories: CategoryId[]; // categorías incluidas cuando se elige Remix
 };
 
 export type Concept = {
@@ -67,16 +69,22 @@ function getDb(): Promise<Database> {
   return dbPromise;
 }
 
-/** Conceptos de una categoría; "remix" devuelve todos. */
-export async function loadConcepts(category: SettingsCategory): Promise<Concept[]> {
+/** Conceptos de una categoría. Con "remix" devuelve los de las categorías de `remixCategories`
+    (por defecto todas). */
+export async function loadConcepts(
+  category: SettingsCategory,
+  remixCategories: CategoryId[] = ALL_CATEGORIES,
+): Promise<Concept[]> {
+  const ids = (category === "remix" ? remixCategories : [category]).map((c) => DB_CATEGORY_ID[c]);
+  if (ids.length === 0) return [];
+
   const db = await getDb();
-  const where = category === "remix" ? "" : "WHERE category_id = ?";
   const stmt = db.prepare(
     `SELECT id, en_description AS en, es_description AS es, category_id AS categoryId
-       FROM concepts ${where}`,
+       FROM concepts WHERE category_id IN (${ids.map(() => "?").join(",")})`,
   );
   try {
-    if (category !== "remix") stmt.bind([DB_CATEGORY_ID[category]]);
+    stmt.bind(ids);
     const rows: Concept[] = [];
     while (stmt.step()) {
       const r = stmt.getAsObject();

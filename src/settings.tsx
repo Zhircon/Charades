@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from "react";
 import FullscreenButton from "./fullscreen";
-import type { GameSettings } from "./concepts";
+import type { CategoryId, GameSettings } from "./concepts";
+import { toggleRemixCategory } from "./remix";
 import { unlockAudio } from "./sound";
 import { requestTiltPermission } from "./tilt";
 
@@ -98,6 +99,9 @@ const CATEGORIES: Category[] = [
   },
 ];
 
+/* Categorías que se pueden incluir o excluir de Remix (todas menos Remix). */
+const REMIX_ITEMS = CATEGORIES.filter((c): c is Category & { id: CategoryId } => c.id !== "remix");
+
 const MIN_MINUTES = 1;
 const MAX_MINUTES = 10;
 
@@ -112,6 +116,7 @@ export default function Settings({
   const [endless, setEndless] = useState(initial.endless);
   const [minutes, setMinutes] = useState(initial.minutes);
   const [tilt, setTilt] = useState(initial.tilt);
+  const [remix, setRemix] = useState<CategoryId[]>(initial.remixCategories);
 
   const active = CATEGORIES.find((c) => c.id === categoryId) ?? CATEGORIES[0];
 
@@ -169,6 +174,40 @@ export default function Settings({
               </div>
             </div>
           </div>
+
+          {categoryId === "remix" && (
+            <div className="remix-card">
+              <div className="remix-head">
+                <h3 className="remix-title">Include in Remix</h3>
+                <span className="remix-count" aria-live="polite">
+                  {remix.length}/{REMIX_ITEMS.length}
+                </span>
+              </div>
+              <ul className="remix-list">
+                {REMIX_ITEMS.map((c) => {
+                  const on = remix.includes(c.id);
+                  return (
+                    <li key={c.id} className="remix-row">
+                      <span className="remix-name">
+                        <span aria-hidden="true">{c.icon}</span>
+                        {c.label}
+                      </span>
+                      <button
+                        role="switch"
+                        aria-checked={on}
+                        aria-label={c.label}
+                        disabled={on && remix.length === 1}
+                        className={`switch${on ? " on" : ""}`}
+                        style={{ "--accent": c.color } as CSSVars}
+                        onClick={() => setRemix((cur) => toggleRemixCategory(cur, c.id))}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+              {remix.length === 1 && <p className="remix-hint">At least one category must stay on.</p>}
+            </div>
+          )}
 
           <div className="time-card">
             <div className="time-row">
@@ -228,7 +267,7 @@ export default function Settings({
             unlockAudio(); // el audio solo se puede activar desde un toque del usuario
             // iOS pide permiso de sensores y solo lo permite dentro de un toque; en Android no pregunta.
             const ready = tilt ? requestTiltPermission() : Promise.resolve();
-            void ready.then(() => onStart({ category: categoryId, endless, minutes, tilt }));
+            void ready.then(() => onStart({ category: categoryId, endless, minutes, tilt, remixCategories: remix }));
           }}
         >
           Start
